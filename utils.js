@@ -63,7 +63,7 @@ function showEmployeesByDepartment(callbackQuestionFunc) {
       inquirer
         .prompt({
           name: "department",
-          message: "Chose a department to see employees in:",
+          message: "Choose a department to see employees in:",
           type: "list",
           choices: departments,
         })
@@ -107,14 +107,47 @@ function showEmployeesByManager(callbackQuestionFunc) {
       const manDisplay = managers.map(
         (m) => m.manager_firstName + " " + m.manager_lastName
       );
-      console.table(manDisplay);
-      callbackQuestionFunc();
+      inquirer
+        .prompt({
+          name: "manager",
+          message: "Choose a manager to see employees:",
+          type: "list",
+          choices: manDisplay,
+        })
+        .then(({ manager }) => {
+          const emp = rows.filter(
+            (m) =>
+              m.manager_firstName == manager.split(" ")[0] &&
+              m.manager_lastName == manager.split(" ")[1]
+          );
+
+          console.table(emp);
+
+          callbackQuestionFunc();
+        });
     })
     .catch((err) => console.log(err));
 }
 
-function addADepartment() {
-  console.log("add a department");
+function addADepartment(cb) {
+  inquirer
+    .prompt([
+      {
+        name: "name",
+        message: "What is the department name?",
+      },
+    ])
+    .then((data) => {
+      if (data.name) {
+        con
+          .promise()
+          .query("INSERT INTO departments SET ?", data)
+          .then(() => {
+            console.log("Department added");
+            cb();
+          });
+      }
+    });
 }
 function addAnEmployee(cb) {
   inquirer
@@ -185,7 +218,47 @@ function addAnEmployee(cb) {
         });
     });
 }
-function addARole() {}
+function addARole(cb) {
+  inquirer
+    .prompt([
+      {
+        name: "title",
+        message: "What is the title of the role?",
+      },
+      {
+        name: "salary",
+        message: "What is the salary of the role?",
+      },
+    ])
+    .then((titleAndSalary) => {
+      con
+        .promise()
+        .query("SELECT * FROM departments")
+        .then(([departments]) => {
+          const roleChoices = departments.map((r) => r.name);
+          inquirer
+            .prompt({
+              name: "department",
+              message: "What is the department for this role?",
+              type: "list",
+              choices: roleChoices,
+            })
+            .then((res) => {
+              const department = departments.find(
+                (d) => d.name == res.department
+              );
+              const data = { ...titleAndSalary, department_id: department.id };
+              con
+                .promise()
+                .query("INSERT INTO roles SET ?", data)
+                .then(() => {
+                  console.log("Role added");
+                  cb();
+                });
+            });
+        });
+    });
+}
 function updateEmployeeRole() {
   console.log("update employee role");
 }
@@ -222,14 +295,13 @@ function answerQuestion(question, callbackQuestionFunc) {
     case view_employees_by_manager:
       return showEmployeesByManager(callbackQuestionFunc);
     case add_a_department:
-      addADepartment(callbackQuestionFunc);
+      return addADepartment(callbackQuestionFunc);
       break;
     case add_an_employee:
-      addAnEmployee(callbackQuestionFunc);
-      break;
+      return addAnEmployee(callbackQuestionFunc);
+
     case add_a_role:
-      addARole(callbackQuestionFunc);
-      break;
+      return addARole(callbackQuestionFunc);
     case update_an_employee_role:
       updateEmployeeRole(callbackQuestionFunc);
       break;
