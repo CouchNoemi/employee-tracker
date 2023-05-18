@@ -259,8 +259,60 @@ function addARole(cb) {
         });
     });
 }
-function updateEmployeeRole() {
-  console.log("update employee role");
+function updateEmployeeRole(cb) {
+  con
+    .promise()
+    .query("SELECT * FROM employees")
+    .then(([employees, fields]) => {
+      const emps = employees.map((r) => r.first_name + " " + r.last_name);
+      inquirer
+        .prompt({
+          name: "employee",
+          message: "Which employee's role do you want to update?",
+          type: "list",
+          choices: emps,
+        })
+        .then(({ employee }) => {
+          con
+            .promise()
+            .query("SELECT * FROM roles")
+            .then(([roles, fields]) => {
+              const rs = roles.map((r) => r.title);
+              inquirer
+                .prompt({
+                  name: "role",
+                  message:
+                    "Which role do you want to assign to " + employee + "?",
+                  type: "list",
+                  choices: rs,
+                })
+                .then(({ role }) => {
+                  const real_emp = employees.find(
+                    (e) =>
+                      e.first_name == employee.split(" ")[0] &&
+                      e.last_name == employee.split(" ")[1]
+                  );
+                  const real_role = roles.find((r) => r.title == role);
+
+                  const query = `
+                    UPDATE employees
+                    SET role_id = ${real_role.id}
+                    WHERE id = ${real_emp.id};
+                  `;
+                  con
+                    .promise()
+                    .query(query)
+                    .then(([roles, fields]) => {
+                      console.log("Updated " + employee + "'s role");
+                      cb();
+                    })
+                    .catch((err) => console.log(err));
+                });
+            })
+            .catch((err) => console.log(err));
+        });
+    })
+    .catch((err) => console.log(err));
 }
 function updateEmployeeManager() {
   console.log("update employee manager");
@@ -303,8 +355,7 @@ function answerQuestion(question, callbackQuestionFunc) {
     case add_a_role:
       return addARole(callbackQuestionFunc);
     case update_an_employee_role:
-      updateEmployeeRole(callbackQuestionFunc);
-      break;
+      return updateEmployeeRole(callbackQuestionFunc);
     case update_an_employee_manager:
       updateEmployeeManager(callbackQuestionFunc);
       break;
