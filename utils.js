@@ -7,10 +7,6 @@ const add_a_department = "Add A Department";
 const add_an_employee = "Add An Employee";
 const add_a_role = "Add A Role";
 const update_an_employee_role = "Update An Employee's Role";
-const update_an_employee_manager = "Update An Employee's Manager";
-const delete_department = "Delete A Department";
-const delete_employee = "Delete An Employee";
-const delete_role = "Delete A Role";
 const quit = "Quit";
 
 const inquirer = require("inquirer");
@@ -314,18 +310,6 @@ function updateEmployeeRole(cb) {
     })
     .catch((err) => console.log(err));
 }
-function updateEmployeeManager() {
-  console.log("update employee manager");
-}
-function deleteDepartment() {
-  console.log(delete_department);
-}
-function deleteEmployee() {
-  console.log(delete_employee);
-}
-function deleteRole() {
-  console.log(delete_role);
-}
 function stop() {
   console.log("Quiting...");
   console.log("Application stopped!");
@@ -356,18 +340,6 @@ function answerQuestion(question, callbackQuestionFunc) {
       return addARole(callbackQuestionFunc);
     case update_an_employee_role:
       return updateEmployeeRole(callbackQuestionFunc);
-    case update_an_employee_manager:
-      updateEmployeeManager(callbackQuestionFunc);
-      break;
-    case delete_department:
-      deleteDepartment(callbackQuestionFunc);
-      break;
-    case delete_employee:
-      deleteEmployee(callbackQuestionFunc);
-      break;
-    case delete_role:
-      deleteRole(callbackQuestionFunc);
-      break;
     case quit:
       return stop();
     default:
@@ -390,9 +362,5 @@ module.exports = {
   add_an_employee,
   add_a_role,
   update_an_employee_role,
-  update_an_employee_manager,
-  delete_department,
-  delete_employee,
-  delete_role,
   quit,
 };

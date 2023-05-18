@@ -12,10 +12,6 @@ const {
   add_an_employee,
   add_a_role,
   update_an_employee_role,
-  update_an_employee_manager,
-  delete_department,
-  delete_employee,
-  delete_role,
   quit,
 } = require("./utils");
 
@@ -43,10 +39,6 @@ const questions = [
       add_an_employee,
       add_a_role,
       update_an_employee_role,
-      update_an_employee_manager,
-      delete_department,
-      delete_employee,
-      delete_role,
       quit,
     ],
   },

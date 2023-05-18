@@ -41,4 +41,6 @@ SOFTWARE.
 
 # git-hub url
 https://github.com/CouchNoemi/employee-tracker
+
 # VIDEO link
+https://drive.google.com/file/d/1gvbAbBNEvGSiJWAtZIz9b-bQnEg_RpaM/view
